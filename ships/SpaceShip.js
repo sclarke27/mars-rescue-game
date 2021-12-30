@@ -1,5 +1,5 @@
 const BaseShip = require('./BaseShip');
-const Sprites = require('./Sprites');
+const Sprites = require('../sprites/Sprites');
 
 class SpaceShip extends BaseShip {
     constructor(x, y, panel, sprite, simulation) {
@@ -9,13 +9,12 @@ class SpaceShip extends BaseShip {
         this.flameColor1 = [255,255,0];
         this.flameColor2 = [100,100,0];
         this.engineState = null;
-        this.frameWidth = this.sprite.pixels[0].length;
+        this.frameWidth = this.sprite.frameWidth;
         this.speedMultiplierX = 3;
         this.speedMultiplierY = 1;
         this.projectileSpeed = 2;
         this.lives = 3;
-        this.explosionSprite = Sprites.enemyExplosion;
-        // this.deactivationTimeout = 0;
+        this.explosionSprite = Sprites.player.defaultShip.explosion;
     }
 
     animate(time) {
@@ -53,7 +52,7 @@ class SpaceShip extends BaseShip {
         const startX = (!this.facingForward ? currPos.x : currPos.x+this.frameWidth-2);
         const startY = currPos.y+3;
         const speedX = (this.facingForward ? this.projectileSpeed : this.projectileSpeed*-1);
-        this.createProjectile(startX, startY, this.panel, Sprites.playerProjectile, speedX, 0);
+        this.createProjectile(startX, startY, this.panel, Sprites.player.defaultShip.projectile, speedX, 0);
     }
 
     render() {

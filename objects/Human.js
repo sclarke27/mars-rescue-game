@@ -1,4 +1,4 @@
-const Sprites = require("../ships/Sprites");
+const Sprites = require("../sprites/Sprites");
 const GameObject = require("./GameObject");
 
 const HumanStates = {
@@ -22,6 +22,7 @@ class Human extends GameObject {
     }
 
     tick(time) {
+        super.tick(time);
         switch(this.state) {
             case HumanStates.captured:
                 const shipPos = this.capturingShip.getPos();

@@ -62,12 +62,13 @@ class LedPanel {
     }
 
     drawSprite(startX, startY, sprite, flipped = false) {
-        const frameWidth = sprite.pixels[0].length;        
-        const frameHeight = sprite.pixels.length;        
+        const frameWidth = sprite.frameWidth;
+        const frameHeight = sprite.frameHeight;
         const pallette = sprite.pallette;
+        const frame = sprite.getNextFrame();
         
         for(let y = 0; y<frameHeight; y++) {
-            const currentRow = sprite.pixels[y];
+            const currentRow = frame[y];
             if(flipped) {
                 for(let x = frameWidth-1; x>=0; x--) {
                     const currentPixel = currentRow[x];

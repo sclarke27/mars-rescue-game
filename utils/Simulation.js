@@ -1,9 +1,11 @@
 const SpaceShip = require('../ships/SpaceShip');
-const EnemyShip = require('../ships/EnemyShip');
+// const EnemyShip = require('../ships/EnemyShip');
 const Star = require('../objects/Star');
-const ShipSprites = require('../ships/Sprites');
 const Projectile = require('../ships/Projectile');
 const Human = require('../objects/Human');
+const Sprites = require('../sprites/Sprites');
+const DropShip = require('../ships/DropShip');
+const Bomber = require('../ships/Bomber');
 
 class Simulation {
     constructor(panel) {
@@ -13,10 +15,10 @@ class Simulation {
         this.humans = [];
         this.projectiles = [];
         this.panel = panel;
-        this.totalEnemies = 3;
+        this.totalEnemies = 5;
         this.totalHumans = 10;
         this.score = 0;
-        this.groundLevel = 58;
+        this.groundLevel = 55;
         this.isRunning = false;
         this.isPaused = false;
     }
@@ -41,6 +43,26 @@ class Simulation {
 
         this.createPlayer(20, 20, this.panel);
 
+        if(this.humans.length < this.totalHumans) {
+            for(let i = 0; i<(this.totalHumans-this.humans.length); i++) {
+                const newX = Math.round(Math.random() * 120);
+                const newY = this.groundLevel - 5;
+                this.createHuman(newX,newY, this.panel);
+            }            
+        }
+
+        for(let i = 0; i < 3; i++) {
+            const newX = Math.round(Math.random() * 120);
+            const newY = (Math.round(Math.random() * 32)) + 10;
+            this.createBomber(newX,newY, this.panel);                        
+        }           
+
+        for(let i = 0; i<(this.totalEnemies-this.enemies.length); i++) {
+            const newX = Math.round(Math.random() * 120);
+            const newY = -10;
+            this.createDropShip(newX,newY, this.panel);
+            
+        }           
 
         // generate star field
         if(this.stars.length === 0) {
@@ -50,6 +72,7 @@ class Simulation {
                 this.createStar(newX, newY, this.panel);
             }
         }
+
     }
 
     stop() {
@@ -68,8 +91,6 @@ class Simulation {
         for(let i = 0; i<this.projectiles.length; i++) {
             this.projectiles[i].deactivate();  
         }        
-
-        this.tick(Date.now());
 
         this.enemies = [];
         this.humans = [];
@@ -94,29 +115,37 @@ class Simulation {
         }
         
 
+        // if(this.humans.length === 0) {
+        //     this.stop();
+        // }
+
+        let dropShipCount = 0;
+        let bomberCount = 0;
+
         if(this.enemies.length < this.totalEnemies) {
             for(let i = 0; i<(this.totalEnemies-this.enemies.length); i++) {
                 const newX = Math.round(Math.random() * 120);
                 const newY = -10;
-                this.createEnemy(newX,newY, this.panel);
+                this.createDropShip(newX,newY, this.panel);
                 
             }            
         }
 
-        if(this.humans.length < this.totalHumans) {
-            for(let i = 0; i<(this.totalHumans-this.humans.length); i++) {
-                const newX = Math.round(Math.random() * 120);
-                const newY = this.groundLevel - 5;
-                this.createHuman(newX,newY, this.panel);
-            }            
-        }
+        // if(this.humans.length < this.totalHumans) {
+        //     for(let i = 0; i<(this.totalHumans-this.humans.length); i++) {
+        //         const newX = Math.round(Math.random() * 120);
+        //         const newY = this.groundLevel - 5;
+        //         this.createHuman(newX,newY, this.panel);
+        //     }            
+        // }
 
         // tick player sim
         for(let i = 0; i<this.players.length; i++) {
-            if(!this.players[i].isActive && this.players[0].getLives() > 0) {
-                this.players[i].create();
+            const player = this.players[i];
+            if(!player.isActive && player.getLives() > 0) {
+                player.create();
             }
-            this.players[i].tick(time);           
+            player.tick(time);           
         }
 
         // projectile tick
@@ -138,9 +167,10 @@ class Simulation {
         // tick enemy sim
         for(let i = 0; i<this.enemies.length; i++) {
             const enemy = this.enemies[i];
-            enemy.tick(time);
             // check player collision
             if(enemy.isActive && enemy.isAlive) {
+                dropShipCount = enemy.getType() === 'dropShip' ? dropShipCount + 1 : 0;
+                bomberCount = enemy.getType() === 'bomber' ? bomberCount + 1 : 0;
                 for(let p=0; p<this.players.length; p++) {
                     const currentPlayer = this.players[p];
                     if(currentPlayer.isAlive) {
@@ -161,7 +191,7 @@ class Simulation {
                     const distanceY = humanPos.y - enemyPos.y;
                     const distanceX = humanPos.x - enemyPos.x;
                     
-                    if(distanceX < 10 && distanceX > -10) {
+                    if(distanceX < 10 && distanceX > -10 && enemy.getType() == 'dropShip') {
                         if((enemy.getState() == 'free' || enemy.getState() == 'capturing') && (human.getState() == 'free' || human.getState() == 'capturing')) {
                             enemy.capturing(human);
                             human.capturing(enemy);
@@ -175,7 +205,8 @@ class Simulation {
                 }
             } else {
                 enemy.release();
-            }
+            };
+            enemy.tick(time);
         }
 
         // tick humans
@@ -192,6 +223,7 @@ class Simulation {
         }        
 
         this.enemies = this.enemies.filter(enemy => enemy.isActive );
+        this.humans = this.humans.filter(human => human.isActive );
     }
 
     animate(time) {
@@ -262,7 +294,7 @@ class Simulation {
 
     // player methods
     createPlayer(x, y, panel) {
-        const newPlayer = new SpaceShip(x, y, panel, ShipSprites.playerSprite, this);
+        const newPlayer = new SpaceShip(x, y, panel, Sprites.player.defaultShip.ship, this);
         newPlayer.create();
         this.addPlayer(newPlayer)
         return newPlayer;
@@ -277,12 +309,19 @@ class Simulation {
     }
 
     // enemy methods
-    createEnemy(x, y, panel) {
-        const newEnemy = new EnemyShip(x, y, panel, ShipSprites.enemySprite1);
+    createDropShip(x, y, panel) {
+        const newEnemy = new DropShip(x, y, panel);
         this.addEnemy(newEnemy);
         newEnemy.create();
         return newEnemy;
     }
+
+    createBomber(x, y, panel) {
+        const newEnemy = new Bomber(x, y, panel);
+        this.addEnemy(newEnemy);
+        newEnemy.create();
+        return newEnemy;
+    }    
 
     addEnemy(newEnemy) {
         this.enemies.push(newEnemy);
@@ -307,6 +346,10 @@ class Simulation {
 
     getScore() {
         return this.score;
+    }
+
+    getGroundLevel() {
+        return this.groundLevel;
     }
 
     getPlayerLives(playerNumber) {

@@ -11,12 +11,12 @@ class Main {
         this.fps = 0;
         this.font = null;
         this.testFont = null;
-        this.animationInterval = 1000/15;
+        this.animationInterval = 1000/5;
         this.movementInterval = 1000/120;
         this.lastAnimTick = null;
         this.lastMovementTick = null;
-
-        this.groundY = 55;
+        this.title = "Alien Invasion";
+        this.ground = 0;
         this.gameController1 = null;
 
         this.simulation = null;
@@ -37,6 +37,7 @@ class Main {
         this.simulation = new Simulation(this.panel);
         this.gameController1 = new GameController();
 
+        this.ground = this.simulation.getGroundLevel();
         // this.simulation.start();
         this.tick();
     }   
@@ -59,7 +60,7 @@ class Main {
             if(!this.simulation.isRunning) {
                 this.simulation.start();
             } else {
-                this.simulation.pause();
+                // this.simulation.pause();
             }
             
         }
@@ -102,17 +103,17 @@ class Main {
             this.panel.drawText(1, 1, `${this.fps} FPS`, this.uiFont, 100,100,100);
 
             // draw simple ground
-            this.panel.drawLine(0, this.groundY, 128, this.groundY, 0, 255, 0);        
-            this.panel.drawLine(0, this.groundY+1, 128, this.groundY+1, 0, 155, 0);        
-            this.panel.drawLine(0, this.groundY+2, 128, this.groundY+2, 0, 55, 0);
-            for(let i=0; i<=(64-(this.groundY+3)); i++) {
-                this.panel.drawLine(0, this.groundY+3+i, 128, this.groundY+3+i, 0, 25, 0);
+            this.panel.drawLine(0, this.ground, 128, this.ground, 0, 255, 0);        
+            this.panel.drawLine(0, this.ground+1, 128, this.ground+1, 0, 155, 0);        
+            this.panel.drawLine(0, this.ground+2, 128, this.ground+2, 0, 55, 0);
+            for(let i=0; i<=(64-(this.ground+3)); i++) {
+                this.panel.drawLine(0, this.ground+3+i, 128, this.ground+3+i, 0, 25, 0);
             }
 
             // draw mountains
-            this.panel.drawMountain(10, this.groundY, 16, [100,100,0],[255,255,0]);
-            this.panel.drawMountain(42, this.groundY-1, 6, [50,50,0],[150,150,0]);
-            this.panel.drawMountain(72, this.groundY, 22, [100,100,0],[255,255,0]);
+            this.panel.drawMountain(10, this.ground, 16, [100,100,0],[255,255,0]);
+            this.panel.drawMountain(42, this.ground-1, 6, [50,50,0],[150,150,0]);
+            this.panel.drawMountain(72, this.ground, 22, [100,100,0],[255,255,0]);
 
             // render sim objects
             this.simulation.render();
@@ -128,9 +129,9 @@ class Main {
             this.panel.drawText(40, 32, `Paused`, this.uiFont2, 255,255,255);
         }
         if(player1Lives <= 0) {
-            this.panel.drawText(18, 12, `Mars Rescue`, this.scriptFont, 255,50,50);
-            this.panel.drawText(19, 11, `Mars Rescue`, this.scriptFont, 255,255,255);
-            this.panel.drawLine(15, 30, 120, 30, 255, 0, 0);
+            this.panel.drawText(8, 12, `${this.title}`, this.scriptFont, 255,50,50);
+            this.panel.drawText(9, 11, `${this.title}`, this.scriptFont, 255,255,255);
+            this.panel.drawLine(7, 30, 120, 30, 255, 0, 0);
             this.panel.drawText(40, 32, `Press Start`, this.uiFont2, 255,255,255);
         }
 

@@ -27,8 +27,8 @@ class GameObject {
             }
         }
         if(this.sprite !== null) {
-            const frameWidth = this.sprite.pixels[0].length;
-            const frameHeight = this.sprite.pixels.length;
+            const frameWidth = this.sprite.frameWidth;
+            const frameHeight = this.sprite.frameHeight;
             this.boundingBox = {
                 x1: this.posX,
                 y1: this.posY,
@@ -40,6 +40,12 @@ class GameObject {
     }
 
     animate(time) {
+        if(this.sprite && this.isActive && this.isAlive) {
+            this.sprite.animate(time);
+        }
+        if(this.explosionSprite && this.isActive && !this.isAlive) {
+            this.explosionSprite.animate(time);
+        }
     }
 
     render() {
@@ -67,8 +73,8 @@ class GameObject {
         this.deactivationStart = null;
         this.isActive = true;
         if(this.sprite !== null) {
-            const frameWidth = this.sprite.pixels[0].length;
-            const frameHeight = this.sprite.pixels.length;
+            const frameWidth = this.sprite.frameWidth;
+            const frameHeight = this.sprite.frameHeight;
             this.boundingBox = {
                 x1: this.posX,
                 y1: this.posY,
@@ -112,8 +118,8 @@ class GameObject {
         this.posY = y;
         this.posY = (this.posY < 0) ? 0 : this.posY;
         if(this.sprite !== null) {
-            const frameWidth = this.sprite.pixels[0].length;
-            const frameHeight = this.sprite.pixels.length;
+            const frameWidth = this.sprite.frameWidth;
+            const frameHeight = this.sprite.frameHeight;
             this.boundingBox = {
                 x1: this.posX,
                 y1: this.posY,
@@ -149,6 +155,10 @@ class GameObject {
 
     getState() {
         return this.state;
+    }
+
+    getType() {
+        return this.type;
     }
 }
 
