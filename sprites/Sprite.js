@@ -3,9 +3,8 @@ class Sprite {
         this.pallette = sprite.pallette;
         this.frames = sprite.frames;
         this.frameCount = this.frames.length;
-        const firstFrame = this.frames[0];
-        this.frameWidth = firstFrame[0].length;
-        this.frameHeight = firstFrame.length;
+        this.frameWidth = sprite.frameWidth;
+        this.frameHeight = sprite.frameHeight;
         this.currentFrame = 0;
     }
 

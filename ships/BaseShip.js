@@ -3,14 +3,13 @@ const Utils = require('../utils/Functions');
 
 class BaseShip extends GameObject {
     constructor(x, y, panel, sprite, simulation) {
-        super(x, y, panel, sprite);
+        super(x, y, panel, sprite, simulation);
         this.speedX = 0;
         this.speedY = 0;
         this.speedMultiplierX = 1;
         this.speedMultiplierY = 1;
-        this.simulation = simulation;
         this.isCrossDown = false;
-        this.isAlive = true;
+        
         this.isPressed = {
             triangle: false,
             circle: false,
@@ -88,9 +87,13 @@ class BaseShip extends GameObject {
         this.speedY = speedY;
     }
 
-    createProjectile(x, y, panel, sprite, speedX = 0, speedY =0 ) {
-        this.simulation.createProjectile(x, y, panel, sprite, speedX, speedY);
+    createLaser(x, y, panel, sprite, speedX = 0, speedY =0 ) {
+        this.simulation.createLaser(x, y, panel, sprite, speedX, speedY);
     }
+
+    createBomb(x, y, panel, sprite, speedX = 0, speedY =0 ) {
+        this.simulation.createBomb(x, y, panel, sprite, speedX, speedY);
+    }    
 
     animate(time) {
         super.animate(time);
@@ -114,13 +117,10 @@ class BaseShip extends GameObject {
 
     create() {
         super.create();
-        this.isAlive = true;
-
     }
 
     destroy() {
         super.destroy();
-        this.isAlive = false;
     }
 
 }
