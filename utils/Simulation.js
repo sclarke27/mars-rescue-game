@@ -19,9 +19,9 @@ class Simulation {
         this.humans = [];
         this.projectiles = [];
         this.panel = panel;
-        this.totalDropShips = 1;
-        this.totalBombers = 0;
-        this.totalHumans = 0;
+        this.totalDropShips = 6;
+        this.totalBombers = 2;
+        this.totalHumans = 10;
         this.score = 0;
         this.groundLevel = 55;
         this.isRunning = false;

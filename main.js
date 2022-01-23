@@ -1,5 +1,6 @@
 const GameController = require("./utils/GameController");
 const LedPanel = require("./utils/LedPanel");
+const OledPanel = require("./utils/oledPanel/OledPanel");
 const Simulation = require("./utils/Simulation");
 const Sprite = require("./sprites/Sprite");
 const GameLoop = require("./scenarios/GameLoop");
@@ -11,22 +12,23 @@ class Main {
         this.prevTime = null;
         this.frames = 0;
         this.fps = 0;
-        this.renderInterval = 1000 / 90;
+        this.renderInterval = 1000 / 29;
         this.lastRenderTick = null;
         this.title = "Alien Invasion";
         this.gameController1 = null;
         this.autoStart = true;
         // this.startButtonPressed = false;
         this.screenSize = {
-            width: 256,
+            width: 128,
             height: 64,
         };
         this.fonts = {};
         this.scenario = null;
+        this.useOled = false;
     }
 
     start() {
-        this.panel = new LedPanel();
+        this.panel = this.useOled ? new OledPanel() : new LedPanel();
         this.prevTime = Date.now();
         this.lastRenderTick = Date.now();
 
