@@ -1,8 +1,10 @@
 const HID = require("node-hid");
+const Utils = require("./Functions");
 
 class GameController {
     constructor() {
         this.hid = null;
+        this.gamepad = null;
         this.data = {
             analogs: {
                 left: {

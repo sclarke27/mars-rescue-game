@@ -4,12 +4,17 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "npx webpack --config webpack.config.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "easybotics-rpi-rgb-led-matrix": "^0.4.1",
     "node-hid": "^2.1.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.67.0",
+    "webpack-cli": "^4.9.1"
   }
 }

@@ -13,6 +13,7 @@ class EnemyShip extends BaseShip {
         this.type = "enemyShip";
         this.speedX = 0.05;
         this.speedY = 0.05;
+        this.score = 100;
         this.setState(EnemyStates.free);
     }
 
@@ -22,7 +23,7 @@ class EnemyShip extends BaseShip {
 
     tick(time) {
         super.tick(time);
-        if (this.posY >= 58 && this.isAlive) {
+        if (this.posY + this.sprite.frameHeight >= this.simulation.getGroundLevel() && this.isAlive) {
             this.destroy();
         }
     }
@@ -56,10 +57,12 @@ class EnemyShip extends BaseShip {
                 switch (collidingObject.type) {
                     case "laser":
                         collidingObject.destroy();
+                        this.simulation.addScore(this.score);
                         this.destroy();
                         break;
                     case "playerShip":
                         collidingObject.destroy();
+                        this.simulation.removeScore(1000);
                         break;
                 }
             }

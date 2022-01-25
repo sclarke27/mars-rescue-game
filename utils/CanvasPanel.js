@@ -1,71 +1,92 @@
-const LedMatrix = require("easybotics-rpi-rgb-led-matrix");
-const Sprite = require("../sprites/Sprite");
-const Sprites = require("../sprites/Sprites");
-
-class LedPanel {
+class CanvasPanel {
     constructor() {
         this.ledPixels = [];
         this.matrix = null;
         this.isDirty = false;
         this.tempPixel = null;
         this.config = {
-            width: 64,
+            width: 256,
             height: 64,
-            panelType: "rpi-rgb-led-matrix",
-            chained: 1,
-            parallel: 4,
-            brightness: 100,
-            hardwareMapping: "adafruit-hat",
-            rgbSequence: "RGB",
-            cmdLineArgs: ["--led-multiplexing=0", "--led-row-addr-type=4", "--led-slowdown-gpio=1", "--led-pwm-bits=8", "--led-pwm-lsb-nanoseconds=100", "--led-pwm-dither-bits=1"],
         };
         this.frameWidth = this.config.width * 2;
+        this.showDebug = true;
+        this.canvasElement = null;
+        this.pixelImage = null;
+        this.pixelImageData = null;
         this.start();
     }
 
     start() {
-        this.matrix = new LedMatrix(this.config.width, this.config.height, this.config.chained, this.config.parallel, this.config.brightness, this.config.hardwareMapping, this.config.rgbSequence, this.config.cmdLineArgs);
+        this.canvasElement = document.createElement("canvas");
+        this.canvasElement.width = this.config.width;
+        this.canvasElement.height = this.config.height;
+        const targetDiv = document.createElement("div");
+        targetDiv.id = "gameField";
+        targetDiv.appendChild(this.canvasElement);
+        document.body.appendChild(targetDiv);
+        this.matrix = this.canvasElement.getContext("2d");
+
+        this.pixelImage = this.matrix.createImageData(1, 1);
+        this.pixelImageData = this.pixelImage.data;
+        this.matrix.translate(0, -0.5);
+        this.clear();
     }
 
     clear() {
         if (this.matrix) {
-            this.matrix.clear();
+            this.matrix.clearRect(-1, -1, this.config.width + 1, this.config.height + 1);
         }
     }
 
     render() {
         if (this.matrix) {
-            this.matrix.update();
+            // this.matrix.update();
         }
     }
 
     drawText(x, y, text, font, r, g, b) {
         if (this.matrix) {
-            this.matrix.drawText(x, y, text, font, r, g, b);
+            this.matrix.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            this.matrix.font = font; //"8px arial";
+            this.matrix.textBaseline = "top";
+            this.matrix.fillText(text, x + window.textOffsetX, y + window.textOffsetY);
         }
     }
 
     drawLine(x0, y0, x1, y1, r, g, b) {
         if (this.matrix) {
-            this.matrix.drawLine(x0, y0, x1, y1, r, g, b);
+            this.matrix.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+            this.matrix.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            this.matrix.beginPath();
+            this.matrix.moveTo(Math.round(x0), Math.round(y0));
+            this.matrix.lineTo(Math.round(x1), Math.round(y1));
+            this.matrix.stroke();
+            this.matrix.fill();
         }
     }
 
     drawCircle(x0, y0, radius, r, g, b) {
         if (this.matrix) {
-            this.matrix.drawCircle(x0, y0, radius, r, g, b);
+            this.matrix.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+            this.matrix.beginPath();
+            this.matrix.arc(Math.round(x0), Math.round(y0), radius, 0, Math.PI * 2, false);
+            this.matrix.stroke();
         }
     }
 
     fill(r, g, b) {
         if (this.matrix) {
-            this.matrix.fill(r, g, b);
+            // this.matrix.fill(r, g, b);
         }
     }
 
     setPixel(x, y, r, g, b) {
         if (this.matrix) {
-            this.matrix.setPixel(x, y, r, g, b);
+            this.matrix.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+            this.matrix.beginPath();
+            this.matrix.moveTo(Math.round(x), Math.round(y));
+            this.matrix.lineTo(Math.round(x + 1), Math.round(y));
+            this.matrix.stroke();
         }
     }
 
@@ -89,7 +110,7 @@ class LedPanel {
                     const b = parseInt(currentColor[2]);
                     const isBlack = r === 0 && (g === 0) & (b === 0);
                     if (!isBlack) {
-                        this.matrix.setPixel(startX + (frameWidth - x), startY + y, r, g, b);
+                        this.setPixel(startX + (frameWidth - x), startY + y, r, g, b);
                     }
                 }
             } else {
@@ -101,7 +122,7 @@ class LedPanel {
                     const b = parseInt(currentColor[2]);
                     const isBlack = r === 0 && (g === 0) & (b === 0);
                     if (!isBlack) {
-                        this.matrix.setPixel(startX + x, startY + y, r, g, b);
+                        this.setPixel(startX + x, startY + y, r, g, b);
                     }
                 }
             }
@@ -136,4 +157,4 @@ class LedPanel {
     }
 }
 
-module.exports = LedPanel;
+module.exports = CanvasPanel;

@@ -10,7 +10,8 @@ const Laser = require("../ships/projectiles/Laser");
 const Bomb = require("../ships/projectiles/Bomb");
 
 class Simulation {
-    constructor(panel, screenSize) {
+    constructor(panel, screenSize, levelConfig) {
+        this.levelConfig = levelConfig;
         this.enemies = [];
         this.bombers = [];
         this.dropShips = [];
@@ -19,14 +20,15 @@ class Simulation {
         this.humans = [];
         this.projectiles = [];
         this.panel = panel;
-        this.totalDropShips = 6;
-        this.totalBombers = 2;
-        this.totalHumans = 10;
+        this.totalDropShips = this.levelConfig.maxDropShips;
+        this.totalBombers = this.levelConfig.maxBombers;
+        this.totalHumans = this.levelConfig.totalHumans;
         this.score = 0;
         this.groundLevel = 55;
         this.isRunning = false;
         this.isPaused = false;
         this.screenSize = screenSize;
+        this.isBrowserBased = false;
         this.objectPositions = {
             x: [],
             y: [],
@@ -51,7 +53,7 @@ class Simulation {
             this.projectiles[i].destroy();
         }
 
-        this.createPlayer(20, 20, this.panel);
+        this.createPlayer(20, 60, this.panel);
 
         if (this.humans.length < this.totalHumans) {
             for (let i = 0; i < this.totalHumans - this.humans.length; i++) {
@@ -61,23 +63,11 @@ class Simulation {
             }
         }
 
-        for (let i = 0; i < this.totalBombers - this.bombers.length + 1; i++) {
-            const newX = Math.round(Math.random() * 240);
-            const newY = Math.round(Math.random() * 32) + 10;
-            // this.createBomber(newX, newY, this.panel);
-        }
-
-        for (let i = 0; i < this.totalDropShips - this.dropShips.length + 1; i++) {
-            const newX = Math.round(Math.random() * 240);
-            const newY = -10;
-            this.createDropShip(newX, newY, this.panel);
-        }
-
         // generate star field
         if (this.stars.length === 0) {
             for (let i = 0; i < 30; i++) {
                 const newX = Math.round(Math.random() * this.screenSize.width);
-                const newY = Math.round(Math.random() * this.screenSize.height);
+                const newY = Math.round(Math.random() * this.getGroundLevel());
                 this.createStar(newX, newY, this.panel);
             }
         }
@@ -129,19 +119,19 @@ class Simulation {
         //     this.stop();
         // }
 
-        if (this.dropShips.length === 0) {
-            for (let i = 0; i < this.totalDropShips - this.dropShips.length + 1; i++) {
+        if (this.dropShips.length < this.totalDropShips) {
+            if (Math.random() * 10 >= 9.5) {
                 const newX = Math.round(Math.random() * 240);
                 const newY = -10;
                 this.createDropShip(newX, newY, this.panel);
             }
         }
 
-        if (this.bombers.length === 0) {
-            for (let i = 0; i < this.totalBombers - this.bombers.length + 1; i++) {
+        if (this.bombers.length < this.totalBombers) {
+            if (Math.random() * 10 >= 9.5) {
                 const newX = Math.round(Math.random() * 20) - 40;
                 const newY = Math.round(Math.random() * 32) + 10;
-                // this.createBomber(newX, newY, this.panel);
+                this.createBomber(newX, newY, this.panel);
             }
         }
 
@@ -167,18 +157,6 @@ class Simulation {
         // projectile tick
         for (let i = 0; i < this.projectiles.length; i++) {
             const projectile = this.projectiles[i];
-            // // check enemy collision
-            // for (let e = 0; e < this.enemies.length; e++) {
-            //     const enemy = this.enemies[e];
-            //     if (enemy.isAlive && projectile.isAlive) {
-            //         const isColliding = enemy.isColliding(projectile);
-            //         if (isColliding) {
-            //             this.enemies[e].destroy();
-            //             projectile.destroy();
-            //             this.score = this.score + 300;
-            //         }
-            //     }
-            // }
             projectile.tick(time);
             this.mapObjectPosition(projectile);
         }
@@ -186,44 +164,6 @@ class Simulation {
         // tick enemy sim
         for (let i = 0; i < this.enemies.length; i++) {
             const enemy = this.enemies[i];
-            // // check player collision
-            // if (enemy.isActive && enemy.isAlive) {
-            //     for (let p = 0; p < this.players.length; p++) {
-            //         const currentPlayer = this.players[p];
-            //         if (currentPlayer.isAlive) {
-            //             const isColliding = enemy.isColliding(currentPlayer);
-            //             if (isColliding) {
-            //                 enemy.destroy();
-            //                 currentPlayer.destroy();
-            //                 this.score = this.score - 1000;
-            //             }
-            //         }
-            //     }
-
-            //     // find humans
-            //     for (let h = 0; h < this.humans.length; h++) {
-            //         const human = this.humans[h];
-            //         const humanPos = human.getPos();
-            //         const enemyPos = enemy.getPos();
-            //         const distanceY = humanPos.y - enemyPos.y;
-            //         const distanceX = humanPos.x - enemyPos.x;
-
-            //         if (distanceX < 10 && distanceX > -10 && enemy.getType() == "dropShip") {
-            //             if ((enemy.getState() == "free" || enemy.getState() == "capturing") && (human.getState() == "free" || human.getState() == "capturing")) {
-            //                 enemy.capturing(human);
-            //                 human.capturing(enemy);
-            //                 if (distanceY < 8) {
-            //                     enemy.capture(human);
-            //                     human.capture(enemy);
-            //                 }
-            //             }
-            //         }
-            //     }
-
-            //     this.mapObjectPosition(enemy);
-            // } else {
-            //     enemy.release();
-            // }
             enemy.tick(time);
             this.mapObjectPosition(enemy);
         }
@@ -231,13 +171,13 @@ class Simulation {
         // tick humans
         for (let i = 0; i < this.humans.length; i++) {
             const human = this.humans[i];
-            const humanPos = human.getPos();
-            if (humanPos.y < this.groundLevel - 15 && human.getState() == "free") {
-                human.setState("falling");
-            }
-            if (humanPos.y > 50 && human.getState() == "falling") {
-                human.setState("free");
-            }
+            // const humanPos = human.getPos();
+            // if (humanPos.y < this.groundLevel - 15 && human.getState() == "free") {
+            //     human.setState("falling");
+            // }
+            // if (humanPos.y > 50 && human.getState() == "falling") {
+            //     human.setState("free");
+            // }
             human.tick(time);
             this.mapObjectPosition(human);
         }
@@ -307,6 +247,7 @@ class Simulation {
     }
 
     handleInput(data) {
+        // console.info(data.analogs.left.x, data.analogs.left.y);
         if (this.players.length >= 1) {
             this.players[0].handleLeftAnalog(data.analogs.left.x, data.analogs.left.y);
             this.players[0].handleButtons(data.buttons);
@@ -381,6 +322,14 @@ class Simulation {
 
     getScore() {
         return this.score;
+    }
+
+    addScore(points) {
+        this.score = this.score + points;
+    }
+
+    removeScore(points) {
+        this.score = this.score - points;
     }
 
     getGroundLevel() {

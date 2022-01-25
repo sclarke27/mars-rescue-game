@@ -1,5 +1,5 @@
-const GameObject = require('../objects/GameObject');
-const Utils = require('../utils/Functions');
+const GameObject = require("../objects/GameObject");
+const Utils = require("../utils/Functions");
 
 class BaseShip extends GameObject {
     constructor(x, y, panel, sprite, simulation) {
@@ -9,34 +9,40 @@ class BaseShip extends GameObject {
         this.speedMultiplierX = 1;
         this.speedMultiplierY = 1;
         this.isCrossDown = false;
-        
+
         this.isPressed = {
             triangle: false,
             circle: false,
             square: false,
-            cross: false
-        }
+            cross: false,
+        };
     }
-    
+
     handleLeftAnalog(x, y) {
-        let analogX = Utils.normalize(x, 0, 255).toPrecision(1)
-        analogX = (analogX - 0.5).toPrecision(1) * this.speedMultiplierX;
+        if (this.simulation.isBrowserBased) {
+            this.setSpeed(x, y);
+        } else {
+            let analogX = Utils.normalize(x, 0, 255).toPrecision(1);
+            analogX = (analogX - 0.5).toPrecision(1) * this.speedMultiplierX;
 
-        let analogY = Utils.normalize(y, 0, 255).toPrecision(1)
-        analogY = (analogY - 0.5).toPrecision(1) * this.speedMultiplierY;
+            let analogY = Utils.normalize(y, 0, 255).toPrecision(1);
+            analogY = (analogY - 0.5).toPrecision(1) * this.speedMultiplierY;
 
-        this.setSpeed(analogX, analogY);
+            // console.info("setSpeed", x, y, analogX, analogY);
+            this.setSpeed(analogX, analogY);
+        }
     }
 
     handleButtons(buttons) {
         const buttonKeys = Object.keys(buttons);
 
-        for(let i = 0; i<buttonKeys.length; i++) {
+        for (let i = 0; i < buttonKeys.length; i++) {
             const button = buttonKeys[i];
             const buttonValue = buttons[button];
-            if(buttonValue > 10) {
-                if(!this.isPressed[button]) {
-                    switch(button) {
+
+            if (buttonValue > 10) {
+                if (!this.isPressed[button]) {
+                    switch (button) {
                         case "triangle":
                             this.handleTriangleButton(buttonValue);
                             break;
@@ -45,19 +51,31 @@ class BaseShip extends GameObject {
                             break;
                         case "square":
                             this.handleSquareButton(buttonValue);
-                            break;        
+                            break;
                         case "cross":
                             this.handleCrossButton(buttonValue);
                             break;
-    
                     }
                     this.isPressed[button] = true;
                 }
             } else {
+                switch (button) {
+                    case "triangle":
+                        this.handleTriangleButton(0);
+                        break;
+                    case "circle":
+                        this.handleCircleButton(0);
+                        break;
+                    case "square":
+                        this.handleSquareButton(0);
+                        break;
+                    case "cross":
+                        this.handleCrossButton(0);
+                        break;
+                }
                 this.isPressed[button] = false;
             }
-    
-        }        
+        }
     }
 
     handleTriangleButton(buttonValue) {
@@ -77,8 +95,8 @@ class BaseShip extends GameObject {
     }
 
     move() {
-        if(this.isAlive) {
-            this.setPos(this.posX + this.speedX, this.posY + this.speedY);        
+        if (this.isAlive) {
+            this.setPos(this.posX + this.speedX, this.posY + this.speedY);
         }
     }
 
@@ -87,13 +105,13 @@ class BaseShip extends GameObject {
         this.speedY = speedY;
     }
 
-    createLaser(x, y, panel, sprite, speedX = 0, speedY =0 ) {
+    createLaser(x, y, panel, sprite, speedX = 0, speedY = 0) {
         this.simulation.createLaser(x, y, panel, sprite, speedX, speedY);
     }
 
-    createBomb(x, y, panel, sprite, speedX = 0, speedY =0 ) {
+    createBomb(x, y, panel, sprite, speedX = 0, speedY = 0) {
         this.simulation.createBomb(x, y, panel, sprite, speedX, speedY);
-    }    
+    }
 
     animate(time) {
         super.animate(time);
@@ -101,18 +119,16 @@ class BaseShip extends GameObject {
 
     tick(time) {
         super.tick(time);
-        if(this.speedX !== 0) {
-            this.facingForward = (this.speedX > 0);
+        if (this.speedX !== 0) {
+            this.facingForward = this.speedX > 0;
         }
-        if(this.isActive) {
+        if (this.isActive) {
             this.move();
         }
-
     }
 
     render() {
         super.render();
-
     }
 
     create() {
@@ -122,7 +138,6 @@ class BaseShip extends GameObject {
     destroy() {
         super.destroy();
     }
-
 }
 
 module.exports = BaseShip;

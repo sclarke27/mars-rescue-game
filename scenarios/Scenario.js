@@ -1,7 +1,7 @@
-const LedPanel = require("../utils/LedPanel");
-
 class Scenario {
-    constructor(panel, screenSize, fonts) {
+    constructor(scenarioData, panel, screenSize, fonts, scenarioManager) {
+        this.scenarioData = scenarioData;
+        this.scenarioManager = scenarioManager;
         this.panel = panel;
         this.screenSize = screenSize;
         this.fonts = fonts;
@@ -21,6 +21,8 @@ class Scenario {
     render() {}
 
     handleInput(data) {}
+
+    handleStartButton(isPressed) {}
 
     isRunning() {
         return this.running;
