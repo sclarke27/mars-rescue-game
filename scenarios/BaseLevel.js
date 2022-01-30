@@ -2,7 +2,7 @@ const Scenario = require("./Scenario");
 const Simulation = require("../utils/Simulation");
 const Sprite = require("../sprites/Sprite");
 
-class GameLoop extends Scenario {
+class BaseLevel extends Scenario {
     constructor(scenarioData, panel, screenSize, fonts, scenarioManager) {
         super(scenarioData, panel, screenSize, fonts, scenarioManager);
         this.title = "Alien Invasion";
@@ -17,8 +17,8 @@ class GameLoop extends Scenario {
         this.lastAnimTick = null;
         this.lastMovementTick = null;
         this.levelConfig = {
-            maxDropShips: 2,
-            maxBombers: 1,
+            maxDropShips: 10,
+            maxBombers: 0,
             totalHumans: 10,
         };
     }
@@ -107,4 +107,4 @@ class GameLoop extends Scenario {
     }
 }
 
-module.exports = GameLoop;
+module.exports = BaseLevel;

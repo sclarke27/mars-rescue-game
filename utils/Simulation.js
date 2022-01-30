@@ -58,7 +58,7 @@ class Simulation {
         if (this.humans.length < this.totalHumans) {
             for (let i = 0; i < this.totalHumans - this.humans.length; i++) {
                 const newX = Math.round(Math.random() * 240);
-                const newY = this.groundLevel - 5;
+                const newY = 10; //this.groundLevel - 5;
                 this.createHuman(newX, newY, this.panel);
             }
         }

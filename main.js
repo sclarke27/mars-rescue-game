@@ -10,7 +10,7 @@ class Main {
         this.renderInterval = 1000 / 30;
         this.lastRenderTick = null;
         this.gameController1 = null;
-        this.autoStart = false;
+        this.autoStart = true;
         this.scenarioManager = null;
         this.startButtonPressed = false;
         this.screenSize = {
@@ -23,24 +23,6 @@ class Main {
     }
 
     start() {
-        // const LedPanel = require("./utils/LedPanel");
-        // this.panel = new LedPanel();
-
-        // const OledPanel = require("./utils/oledPanel/OledPanel");
-        // this.panel = new OledPanel();
-
-        // const CanvasPanel = require("./utils/CanvasPanel");
-        // this.panel = new CanvasPanel();
-
-        // this.fonts = {
-        //     uiFont: __dirname + "/fonts/" + "4x6.bdf",
-        //     uiFont2: __dirname + "/fonts/" + "5x8.bdf",
-        //     regularFont: __dirname + "/fonts/" + "UTRG__10.bdf",
-        //     scriptFont: __dirname + "/fonts/" + "luBIS14.bdf",
-        // };
-
-        // this.gameController1 = new GameController();
-
         this.prevTime = Date.now();
         this.lastRenderTick = Date.now();
 

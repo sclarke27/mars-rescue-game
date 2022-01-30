@@ -1,5 +1,5 @@
 const EndScreen = require("./EndScreen");
-const GameLoop = require("./GameLoop");
+const BaseLevel = require("./BaseLevel");
 const StartScreen = require("./StartScreen");
 
 class ScenarioManager {
@@ -38,7 +38,7 @@ class ScenarioManager {
                 break;
 
             case "gameLoop":
-                scenarioClass = GameLoop;
+                scenarioClass = BaseLevel;
                 break;
         }
         if (this.scenarioClass !== null) {

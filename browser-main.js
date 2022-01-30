@@ -8,7 +8,8 @@ class BrowserMain extends Main {
     }
     start() {
         const CanvasPanel = require("./utils/CanvasPanel");
-        this.panel = new CanvasPanel();
+        this.panel = new CanvasPanel(this.screenSize);
+        window.document.body.style.setProperty("--canvas-width", `${this.screenSize.width}px`);
         this.renderInterval = 1000 / 120;
         this.fonts = {
             uiFont: "7px Lato",

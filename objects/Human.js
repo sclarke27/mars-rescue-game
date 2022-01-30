@@ -25,6 +25,22 @@ class Human extends GameObject {
 
     tick(time) {
         super.tick(time);
+
+        if (this.posY + this.sprite.frameHeight < this.simulation.getGroundLevel() && this.state === HumanStates.free) {
+            this.setState(HumanStates.falling);
+        }
+
+        if (this.posY + this.sprite.frameHeight >= this.simulation.getGroundLevel() && this.state === HumanStates.falling) {
+            this.posY = this.simulation.getGroundLevel() - 5;
+            this.setState(HumanStates.free);
+        }
+
+        if (this.state === HumanStates.capturing || this.state === HumanStates.captured) {
+            if (!this.capturingShip || !this.capturingShip.isAlive) {
+                this.setState(HumanStates.free);
+            }
+        }
+
         switch (this.state) {
             case HumanStates.captured:
                 const shipPos = this.capturingShip.getPos();
@@ -35,12 +51,8 @@ class Human extends GameObject {
                 this.walk();
                 break;
             case HumanStates.falling:
-                const nextY = this.posY + 2;
-                // if (nextY > this.simulation.getGroundLevel() + this.sprite.frameHeight) {
-                //     nextY = this.simulation.getGroundLevel() + this.sprite.frameHeight;
-                // }
+                const nextY = this.posY + 0.75;
                 this.setPos(this.posX, nextY);
-                this.setState(HumanStates.free);
                 break;
         }
     }

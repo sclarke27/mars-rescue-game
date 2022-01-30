@@ -11,6 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&family=Lato:wght@500&display=swap"
         rel="stylesheet">
     <style>
+        :root {
+            --canvas-width: 64px;
+        }
+
         body {
             background-color: rgb(10, 10, 10);
             display: flex;
@@ -27,7 +31,7 @@
         canvas {
             background-color: rgb(0, 0, 0);
             image-rendering: pixelated;
-            width: calc(256px * 6);
+            width: calc(var(--canvas-width) * 6);
         }
     </style>
 </head>

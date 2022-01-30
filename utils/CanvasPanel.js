@@ -1,13 +1,10 @@
 class CanvasPanel {
-    constructor() {
+    constructor(screenSize) {
         this.ledPixels = [];
         this.matrix = null;
         this.isDirty = false;
         this.tempPixel = null;
-        this.config = {
-            width: 256,
-            height: 64,
-        };
+        this.config = screenSize;
         this.frameWidth = this.config.width * 2;
         this.showDebug = true;
         this.canvasElement = null;
