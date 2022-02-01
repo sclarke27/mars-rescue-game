@@ -9,24 +9,21 @@ class BaseLevel extends Scenario {
         this.ground = 0;
         this.gameController1 = null;
         this.backgroundSprite = null;
-        this.simulation = null;
         this.autoStart = true;
         this.startButtonPressed = false;
-        this.animationInterval = 1000 / 10;
+
         this.movementInterval = 1000 / 120;
-        this.lastAnimTick = null;
-        this.lastMovementTick = null;
         this.levelConfig = {
-            maxDropShips: 10,
+            maxDropShips: 25,
             maxBombers: 0,
-            totalHumans: 10,
+            totalHumans: 20,
         };
     }
 
     start() {
         super.start();
         this.lastMovementTick = Date.now();
-        this.lastAnimTick = Date.now();
+
         this.simulation = new Simulation(this.panel, this.screenSize, this.levelConfig);
         this.simulation.isBrowserBased = this.scenarioManager.isBrowserBased;
         this.backgroundSprite = new Sprite(Sprites.moonBackground);
@@ -45,17 +42,18 @@ class BaseLevel extends Scenario {
             });
         }
 
-        // handle animation tick interval
-        if (time - this.lastAnimTick >= this.animationInterval) {
-            this.simulation.animate(time);
-            this.lastAnimTick = time;
-        }
-
         // handle sim tick interval
         if (time - this.lastMovementTick >= this.movementInterval) {
             this.simulation.tick(time);
 
             this.lastMovementTick = time;
+        }
+    }
+
+    animate(time) {
+        super.animate(time);
+        if (this.simulation) {
+            this.simulation.animate(time);
         }
     }
 

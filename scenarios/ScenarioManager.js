@@ -8,7 +8,7 @@ class ScenarioManager {
         this.panel = panel;
         this.screenSize = screenSize;
         this.fonts = fonts;
-
+        this.isGamePadActive = false;
         this.currentScenario = null;
     }
 
@@ -61,8 +61,10 @@ class ScenarioManager {
         }
     }
 
-    handleInput(data) {
-        if (this.currentScenario !== null) {
+    handleInput(gamePad) {
+        this.isGamePadActive = gamePad.isPadActive;
+        const data = gamePad.data;
+        if (this.currentScenario !== null && this.isGamePadActive) {
             this.currentScenario.handleInput(data);
         }
     }

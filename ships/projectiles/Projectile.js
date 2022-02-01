@@ -7,7 +7,7 @@ class Projectile extends GameObject {
         this.speedX = speedX;
         this.speedY = speedY;
         this.created = Date.now();
-        this.tickLife = 300;
+        this.tickLife = 100;
         this.facingForward = this.speedX <= 0;
         this.isAlive = true;
     }

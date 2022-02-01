@@ -10,7 +10,7 @@ class Main {
         this.renderInterval = 1000 / 30;
         this.lastRenderTick = null;
         this.gameController1 = null;
-        this.autoStart = true;
+        this.autoStart = false;
         this.scenarioManager = null;
         this.startButtonPressed = false;
         this.screenSize = {
@@ -19,7 +19,7 @@ class Main {
         };
         this.fonts = {};
         this.scenario = null;
-        this.isBrowserBased = true;
+        this.isBrowserBased = false;
     }
 
     start() {
@@ -59,7 +59,7 @@ class Main {
                 this.scenarioManager.handleStartButton(false);
             }
 
-            this.scenarioManager.handleInput(this.gameController1.data);
+            this.scenarioManager.handleInput(this.gameController1);
         }
 
         this.scenarioManager.tick(time);
@@ -71,9 +71,14 @@ class Main {
             this.lastRenderTick = time;
         }
 
-        // do loop
         clearTimeout(this.mainLoopTimeout);
-        this.mainLoopTimeout = setTimeout(this.tick.bind(this), 1);
+        if (this.isBrowserBased) {
+            // do loop
+            this.mainLoopTimeout = window.requestAnimationFrame(this.tick.bind(this));
+        } else {
+            // do loop
+            this.mainLoopTimeout = setTimeout(this.tick.bind(this), 1);
+        }
     }
 
     render() {

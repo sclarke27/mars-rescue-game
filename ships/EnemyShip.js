@@ -62,7 +62,7 @@ class EnemyShip extends BaseShip {
                         break;
                     case "playerShip":
                         collidingObject.destroy();
-                        this.simulation.removeScore(1000);
+                        // this.simulation.removeScore(1000);
                         break;
                 }
             }

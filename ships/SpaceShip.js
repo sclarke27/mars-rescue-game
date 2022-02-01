@@ -13,10 +13,11 @@ class SpaceShip extends BaseShip {
         this.frameWidth = this.sprite.frameWidth;
         this.speedMultiplierX = 2;
         this.speedMultiplierY = 0.75;
-        this.projectileSpeed = 2;
+        this.projectileSpeed = 3;
         this.lives = 3;
         this.explosionSprite = new Sprite(Sprites.player.defaultShip.explosion);
         this.shieldEnabled = false;
+        this.autoPlay = true;
     }
 
     animate(time) {
@@ -24,8 +25,176 @@ class SpaceShip extends BaseShip {
         this.engineState = this.engineState === "alt1" ? "alt2" : "alt1";
     }
 
+    // tick(time) {
+    //     super.tick(time);
+    //     let lowestEnemy = null;
+    //     if (this.autoPlay) {
+    //         const enemyList = this.simulation.enemies;
+
+    //         if (enemyList.length === 0) {
+    //             this.handleLeftAnalog(0, 0);
+    //             return;
+    //         }
+
+    //         for (let i = 0; i < enemyList.length; i++) {
+    //             const enemy = enemyList[i];
+    //             if (lowestEnemy === null || lowestEnemy.getPos().y < enemy.getPos().y) {
+    //                 if (enemy.getPos().y > 5) {
+    //                     lowestEnemy = enemy;
+    //                 }
+    //             }
+    //         }
+
+    //         if (lowestEnemy === null) {
+    //             this.handleLeftAnalog(0, 0);
+    //             return;
+    //         }
+
+    //         const xDist = this.posX - (lowestEnemy !== null ? lowestEnemy.getPos().x : 0);
+    //         const yDist = this.posY - (lowestEnemy !== null ? lowestEnemy.getPos().y : 0);
+
+    //         let speedX = 0;
+    //         let speedY = 0;
+
+    //         if (xDist < -20) {
+    //             speedX = 1;
+    //         } else if (xDist < 0 && xDist > -20) {
+    //             speedX = -1;
+    //         } else {
+    //             speedX = 1;
+    //         }
+
+    //         if (xDist > 20) {
+    //             speedX = -1;
+    //         } else if (xDist < 20 && xDist >= 0) {
+    //             speedX = 1;
+    //         } else if (xDist === -20) {
+    //             speedX = -1;
+    //         }
+
+    //         if (yDist < 0) {
+    //             speedY = 1;
+    //         } else if (yDist > 1) {
+    //             speedY = -1;
+    //         } else {
+    //             speedY = 0;
+    //             if (xDist <= 25 && xDist >= -25) {
+    //                 this.handleCrossButton(100);
+    //             }
+    //         }
+
+    //         for (let i = 0; i < enemyList.length; i++) {
+    //             const enemy = enemyList[i];
+
+    //             const xDist = this.posX - (enemy !== null ? enemy.getPos().x : 0);
+    //             const yDist = this.posY - (enemy !== null ? enemy.getPos().y : 0);
+
+    //             if (xDist >= -50 && xDist <= 50) {
+    //                 if (yDist >= -50 && yDist <= 50) {
+    //                     handleSquareButton(100);
+    //                 }
+    //                 // console.info({ xDist, yDist });
+    //             }
+    //         }
+
+    //         this.handleLeftAnalog(speedX, speedY);
+    //     }
+    // }
+
     tick(time) {
         super.tick(time);
+
+        if (this.autoPlay) {
+            const enemyList = this.simulation.enemies;
+            const nearestEnemy = {
+                distance: -1,
+                enemy: null,
+            };
+            let enableShields = false;
+            let lowestEnemy = null;
+            let capturingEnemy = null;
+            let minXDist = 12;
+            for (let i = 0; i < enemyList.length; i++) {
+                const currentEnemy = enemyList[i];
+                const currentDistance = this.findDistance(this.posX, this.posY, currentEnemy.getPos().x, currentEnemy.getPos().y);
+                // console.info({ currentDistance });
+                // if (currentEnemy.getPos().y >= 0) {
+                if ((nearestEnemy.distance > currentDistance || nearestEnemy.distance === -1) && currentDistance !== NaN) {
+                    nearestEnemy.distance = currentDistance;
+                    nearestEnemy.enemy = currentEnemy;
+                }
+                if (lowestEnemy === null || lowestEnemy.getPos().y < currentEnemy.getPos().y) {
+                    if (currentEnemy.getPos().y > 5) {
+                        lowestEnemy = currentEnemy;
+                    }
+                }
+                if (currentEnemy.getState() === "captured") {
+                    capturingEnemy = currentEnemy;
+                }
+                // }
+                const xDist = this.posX - currentEnemy.getPos().x;
+                const yDist = this.posY - (currentEnemy !== null ? currentEnemy.getPos().y : 0);
+
+                if (xDist >= minXDist * -1 && xDist <= minXDist) {
+                    if (yDist >= minXDist * -1 && yDist <= minXDist) {
+                        if (!enableShields && yDist >= -5 && yDist <= 5) {
+                            this.handleCrossButton(100);
+                        }
+                        enableShields = true;
+                    }
+                }
+            }
+            this.handleSquareButton(enableShields ? 100 : 0);
+            const enemy = capturingEnemy !== null ? capturingEnemy : lowestEnemy; //nearestEnemy.enemy;
+            if (enemy) {
+                const xDist = this.posX - enemy.getPos().x;
+                const yDist = this.posY - enemy.getPos().y;
+
+                let speedX = 0;
+                let speedY = 0;
+
+                if (xDist <= minXDist * -1) {
+                    speedX = 1;
+                } else if (xDist > minXDist * -1 && xDist <= 0) {
+                    speedX = -1;
+                } else if (xDist > 0 && xDist < minXDist) {
+                    speedX = 1;
+                } else if (xDist >= minXDist) {
+                    speedX = -1;
+                }
+
+                // if (xDist > 15) {
+                //     speedX = -1;
+                // } else if (xDist < 15 && xDist >= 0) {
+                //     speedX = 1;
+                // } else if (xDist === -15) {
+                //     speedX = -1;
+                // }
+
+                if (yDist < 0) {
+                    speedY = 1;
+                } else if (yDist > 1) {
+                    speedY = -1;
+                } else {
+                    speedY = 0;
+                    if (xDist > -15 && xDist < 15) {
+                        // this.handleCrossButton(100);
+                    }
+                }
+
+                this.handleLeftAnalog(speedX, speedY);
+                // console.info({ nearestEnemy, xDist, yDist });
+            }
+            // }
+        }
+    }
+
+    findDistance(x1, y1, x2, y2) {
+        let distance = 1;
+        const xPow = Math.pow(x2 - x1, 2);
+        const yPow = Math.pow(y2 - y1, 2);
+        distance = Math.sqrt(xPow + yPow);
+        return distance;
     }
 
     restart() {
@@ -43,8 +212,10 @@ class SpaceShip extends BaseShip {
     }
 
     destroy() {
-        super.destroy();
-        this.lives = this.lives - 1;
+        if (!this.shieldEnabled) {
+            super.destroy();
+            this.lives = this.lives - 1;
+        }
     }
 
     setPos(x = 0, y = 0) {

@@ -2,7 +2,10 @@ const Utils = require("./Functions");
 
 class BrowserGamePad {
     constructor() {
+        this.gamepads = [];
         this.gamepad = null;
+        this.gamePadIndex = -1;
+        this.isPadActive = false;
         this.data = {
             analogs: {
                 left: {
@@ -35,9 +38,52 @@ class BrowserGamePad {
 
     start() {
         window.addEventListener("gamepadconnected", (e) => {
-            this.gamepad = navigator.getGamepads()[e.gamepad.index];
-            console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", this.gamepad.index, this.gamepad.id, this.gamepad.buttons.length, this.gamepad.axes.length);
+            this.gamepads[e.gamepad.index] = navigator.getGamepads()[e.gamepad.index];
+            console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.", this.gamepads[e.gamepad.index].index, this.gamepads[e.gamepad.index].id, this.gamepads[e.gamepad.index].buttons.length, this.gamepads[e.gamepad.index].axes.length);
         });
+        window.addEventListener("gamepaddisconnected", function (e) {
+            this.gamepads[e.gamepad.index] = null;
+            console.log("Gamepad disconnected from index %d: %s", e.gamepad.index, e.gamepad.id);
+        });
+        window.onkeydown = (evt) => {
+            this.keyEvent(evt, true);
+        };
+        window.onkeyup = (evt) => {
+            this.keyEvent(evt, false);
+        };
+    }
+
+    keyEvent(evt, isKeyDown) {
+        switch (evt.keyCode) {
+            // enter
+            case 13:
+                this.data.buttons.startButton = isKeyDown;
+                break;
+            // space
+            case 32:
+                this.data.buttons.cross = isKeyDown ? 100 : 0;
+                break;
+            // w key
+            case 87:
+                this.data.analogs.left.y = isKeyDown ? -1 : 0;
+                break;
+            // a key
+            case 65:
+                this.data.analogs.left.x = isKeyDown ? -1 : 0;
+                break;
+            // s key
+            case 83:
+                this.data.analogs.left.y = isKeyDown ? 1 : 0;
+                break;
+            // d key
+            case 68:
+                this.data.analogs.left.x = isKeyDown ? 1 : 0;
+                break;
+            // left shift
+            case 16:
+                this.data.buttons.square = isKeyDown ? 100 : 0;
+                break;
+        }
     }
 
     receive(data) {
@@ -71,10 +117,19 @@ class BrowserGamePad {
     }
 
     read() {
-        if (this.gamepad) {
-            // console.info("this.gamepad", this.gamepad);
-            this.gamepad = navigator.getGamepads()[this.gamepad.index];
-            this.receive(this.gamepad);
+        if (this.gamepads.length > 0) {
+            this.isPadActive = true;
+            for (let i = 0; i < this.gamepads.length; i++) {
+                if (this.gamepads[i] !== null) {
+                    this.gamepads[i] = navigator.getGamepads()[i];
+                    this.receive(this.gamepads[i]);
+                } else {
+                    // gamepad disconnected after game play started
+                    this.isPadActive = false;
+                }
+            }
+        } else {
+            this.isPadActive = false;
         }
     }
 }

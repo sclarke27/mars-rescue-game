@@ -86,7 +86,7 @@ class DropShip extends EnemyShip {
 
     capturing(human) {
         if (this.state !== EnemyStates.capturing && this.isAlive && this.isActive) {
-            console.info("enemy | capturing");
+            // console.info("enemy | capturing");
             super.capturing(human);
             this.humanToCapture = human;
         }
@@ -94,7 +94,7 @@ class DropShip extends EnemyShip {
 
     capture(human) {
         if (this.state !== EnemyStates.captured && this.isAlive && this.isActive) {
-            console.info("enemy | capture");
+            // console.info("enemy | capture");
             super.capture(human);
             this.humanToCapture = human;
         }
@@ -103,14 +103,14 @@ class DropShip extends EnemyShip {
     release() {
         super.release();
         if (this.humanToCapture !== null) {
-            console.info("enemy | release");
+            // console.info("enemy | release");
             this.humanToCapture.release();
             this.humanToCapture = null;
         }
     }
 
     setState(newState) {
-        console.info(`${this.type} | setState | ${newState}`);
+        // console.info(`${this.type} | setState | ${newState}`);
         super.setState(newState);
     }
 }

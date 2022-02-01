@@ -5,6 +5,7 @@ class GameController {
     constructor() {
         this.hid = null;
         this.gamepad = null;
+        this.isPadActive = false;
         this.data = {
             analogs: {
                 left: {
@@ -77,6 +78,9 @@ class GameController {
     read() {
         if (this.hid) {
             this.hid.read(this.receive.bind(this));
+            this.isPadActive = true;
+        } else {
+            this.isPadActive = false;
         }
     }
 }

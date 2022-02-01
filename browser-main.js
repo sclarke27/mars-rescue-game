@@ -17,7 +17,7 @@ class BrowserMain extends Main {
             // regularFont: "8px arial",
             scriptFont: "17px Roboto",
         };
-
+        this.isBrowserBased = true;
         this.gameController1 = new BrowserGamePad();
 
         super.start();

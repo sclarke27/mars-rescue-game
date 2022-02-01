@@ -72,7 +72,7 @@ class Human extends GameObject {
 
     capture(capturingShip) {
         if (this.state === HumanStates.capturing && this.isAlive) {
-            console.info("human | capture");
+            // console.info("human | capture");
             this.setState(HumanStates.captured);
             this.capturingShip = capturingShip;
         }
@@ -80,7 +80,7 @@ class Human extends GameObject {
 
     capturing(capturingShip) {
         if (this.state === HumanStates.free && this.isAlive) {
-            console.info("human | capturing");
+            // console.info("human | capturing");
             this.setState(HumanStates.capturing);
             this.capturingShip = capturingShip;
             return true;
@@ -91,7 +91,7 @@ class Human extends GameObject {
 
     release() {
         if (this.state !== HumanStates.free && this.isAlive) {
-            console.info("human | release");
+            // console.info("human | release");
             this.setState(HumanStates.falling);
             this.capturingShip = null;
         }
@@ -117,7 +117,7 @@ class Human extends GameObject {
     }
 
     setState(newState) {
-        console.info(`${this.type} | setState | ${newState}`);
+        // console.info(`${this.type} | setState | ${newState}`);
         super.setState(newState);
     }
 }
