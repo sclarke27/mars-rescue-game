@@ -13,7 +13,7 @@ class SpaceShip extends BaseShip {
         this.frameWidth = this.sprite.frameWidth;
         this.speedMultiplierX = 2;
         this.speedMultiplierY = 0.75;
-        this.projectileSpeed = 3;
+        this.projectileSpeed = 2;
         this.lives = 3;
         this.explosionSprite = new Sprite(Sprites.player.defaultShip.explosion);
         this.shieldEnabled = false;
@@ -145,7 +145,7 @@ class SpaceShip extends BaseShip {
                 }
             }
             this.handleSquareButton(enableShields ? 100 : 0);
-            const enemy = capturingEnemy !== null ? capturingEnemy : lowestEnemy; //nearestEnemy.enemy;
+            const enemy = capturingEnemy !== null ? capturingEnemy : nearestEnemy.enemy;
             if (enemy) {
                 const xDist = this.posX - enemy.getPos().x;
                 const yDist = this.posY - enemy.getPos().y;

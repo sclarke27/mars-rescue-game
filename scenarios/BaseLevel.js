@@ -14,8 +14,8 @@ class BaseLevel extends Scenario {
 
         this.movementInterval = 1000 / 120;
         this.levelConfig = {
-            maxDropShips: 25,
-            maxBombers: 0,
+            maxDropShips: 10,
+            maxBombers: 1,
             totalHumans: 20,
         };
     }

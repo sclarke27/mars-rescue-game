@@ -10,6 +10,8 @@ class DropShip extends EnemyShip {
         this.sprite = new Sprite(Sprites.enemies.dropShip.ship);
         this.explosionSprite = new Sprite(Sprites.enemies.dropShip.explosion);
         this.deactivationTimeout = 240;
+        this.speedX = 0.15;
+        this.speedY = 0.15;
     }
 
     tick(time) {
