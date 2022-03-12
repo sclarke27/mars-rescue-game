@@ -11,7 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "easybotics-rpi-rgb-led-matrix": "^0.4.1",
-    "node-hid": "^2.1.1"
+    "i2c-bus": "^5.2.2",
+    "node-hid": "^2.1.1",
+    "oled-font-5x7": "^1.0.3",
+    "oled-i2c-bus": "^1.0.12"
   },
   "devDependencies": {
     "webpack": "^5.67.0",

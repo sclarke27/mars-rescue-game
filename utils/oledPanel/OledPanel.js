@@ -2,6 +2,11 @@ const Sprite = require("../../sprites/Sprite");
 const Sprites = require("../../sprites/Sprites");
 const PythonWrapper = require("../pythonWrapper");
 
+const i2c = require("i2c-bus");
+const i2cBus = i2c.openSync(1);
+const oled = require("oled-i2c-bus");
+const font5x7 = require("oled-font-5x7");
+
 class OledPanel {
     constructor() {
         this.ledPixels = [];
@@ -11,6 +16,7 @@ class OledPanel {
         this.config = {
             width: 128,
             height: 64,
+            address: 0x3c,
         };
         this.oledBonnet = {
             file: "./utils/oledPanel/oledPanelBridge.py",
@@ -25,12 +31,15 @@ class OledPanel {
         this.matrix = new PythonWrapper(this.oledBonnet.file, this.showDebug);
         this.matrix.start();
         this.matrix.writeMessage(`{"key": "start"}`);
+        // this.matrix = new oled(i2cBus, this.config);
+        // this.matrix.clearDisplay();
+        // this.matrix.turnOnDisplay();
     }
 
     clear() {
         if (this.matrix) {
             this.matrix.writeMessage(`{"key": "clear"}`);
-            // this.matrix.clear();
+            // this.matrix.clearDisplay();
         }
     }
 
@@ -44,7 +53,9 @@ class OledPanel {
     drawText(x, y, text, font, r, g, b) {
         if (this.matrix) {
             this.matrix.writeMessage(`{"key": "drawText", "x": ${x}, "y": ${y}, "text": "${text}"}`);
-            // this.matrix.drawText(x, y, text, font, r, g, b);
+
+            // this.matrix.setCursor(x, y);
+            // this.matrix.writeString(font5x7, 1, text, 1, false);
         }
     }
 
@@ -53,7 +64,15 @@ class OledPanel {
             const isBlack = r === 0 && g === 0 && b === 0;
 
             this.matrix.writeMessage(`{"key": "drawLine", "x0": ${x0}, "y0": ${y0}, "x1": "${x1}", "y1": "${y1}", "color": "${isBlack ? 0 : 1}"}`);
-            // this.matrix.drawLine(x0, y0, x1, y1, r, g, b);
+            // this.matrix.drawLine(x0, y0, x1, y1, isBlack ? 0 : 1);
+        }
+    }
+
+    drawCircle(x0, y0, radius, r, g, b) {
+        if (this.matrix) {
+            const isBlack = r === 0 && g === 0 && b === 0;
+            this.matrix.writeMessage(`{"key": "drawCircle", "x": ${x0}, "y": ${y0}, "radius": "${radius}", "color": "${isBlack ? 0 : 1}"}`);
+            // this.matrix.drawCircle(x0, y0, radius, r, g, b);
         }
     }
 
@@ -67,7 +86,7 @@ class OledPanel {
         if (this.matrix) {
             const isBlack = r === 0 && g === 0 && b === 0;
             this.matrix.writeMessage(`{"key": "setPixel", "x": ${x}, "y": ${y}, "color": "${isBlack ? 0 : 1}"}`);
-            // this.matrix.setPixel(x, y, r, g, b);
+            // this.matrix.drawPixel([x, y, 1]);
         }
     }
 

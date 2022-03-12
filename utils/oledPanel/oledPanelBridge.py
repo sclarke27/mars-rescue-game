@@ -70,6 +70,12 @@ if __name__ == '__main__':
         # color = int(payload["color"])
         disp.text(text, x, y, 1)
 
+      if key == "drawCircle":
+          x1 = int(payload["x"])
+          y1 = int(payload["y"])
+          radius = int(payload["radius"])
+          color = int(payload["color"])
+          disp.circle(x,y,radius,color)
 
       if key == "drawLine":
           x1 = int(payload["x0"])
